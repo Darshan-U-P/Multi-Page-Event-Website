@@ -1,102 +1,98 @@
-# EventSphere — Multi-Page Event Website
+# EventSphere — Multi-Page Event Website + Admin CMS
 
-A responsive event-discovery website built with **HTML5, CSS3, Apache httpd, and Docker Compose**. This project demonstrates how a multi-page static site can be served from a Docker container and edited live through a bind mount.
+A responsive multi-page event website built with HTML, CSS, JavaScript, GSAP, Apache httpd, FastAPI, SQLite, and Docker Compose.
 
-> **Project note:** Event listings, dates, venues, and schedules are sample demonstration content. The site does not provide real registrations, tickets, payments, or event management.
+> **Demo content:** Event listings and schedules are sample content. Booking, ticketing, and payments are not implemented. Admin sessions are intended for one local Docker instance; do not expose the admin publicly without HTTPS, production session storage, rate limiting, and a security review.
 
-## Pages
+## Features
 
-- **Home** — introduction, featured event, benefits, and upcoming event cards.
-- **Events** — sample events across technology, workshops, and startups.
-- **Event details** — featured event overview and illustrative schedule.
-- **About** — project purpose, features, and technology stack.
-- **Contact** — repository link and explanation of the static demo's limitations.
+- Five public pages with responsive blue/violet styling.
+- GSAP entrance and ScrollTrigger reveals with reduced-motion support.
+- Admin workspace at `/admin/` for login, event management, homepage copy, appearance settings, and a draft preview.
+- FastAPI API with Argon2 password hashing, session expiry, HttpOnly session cookie, CSRF checks, SQLite persistence, and audit logging.
+- Apache proxies `/api/` to the backend; port 8000 is private to the Docker network.
+- Host-file live edits remain available in VS Code. Only web assets are mounted into Apache; local secrets and backend source are not placed in the public document root.
 
-## Prerequisites
+## Configure the admin login
 
-- Windows 10/11, macOS, or Linux
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) on Windows/macOS, or Docker Engine with the Compose plugin on Linux
-- A code editor such as [Visual Studio Code](https://code.visualstudio.com/)
-
-On Windows, start Docker Desktop and wait until its engine is running before using the commands below.
-
-## Run locally with Docker
-
-1. Clone this repository and open the project folder:
-
-   ```powershell
-   git clone https://github.com/Darshan-U-P/Multi-Page-Event-Website.git
-   cd Multi-Page-Event-Website
-   ```
-
-2. Start the site:
-
-   ```powershell
-   docker compose up --build -d
-   ```
-
-3. Open **http://localhost:8080** in your browser.
-
-4. To stop the container:
-
-   ```powershell
-   docker compose down
-   ```
-
-## Live editing
-
-The Compose configuration bind-mounts the project directory into Apache's document root as read-only from the container's perspective. This means you can edit files on your computer while Apache serves the updated files immediately.
-
-1. Open the project folder in VS Code.
-2. Edit any HTML file or `css/style.css` and save it.
-3. Refresh the browser at http://localhost:8080 (use `Ctrl + F5` for a hard refresh if cached CSS remains).
-
-**You do not need to rebuild or restart the container for normal HTML/CSS edits.** The `:ro` mount protects the host files from being changed by the container; your editor can still update those files on the host.
-
-## Project structure
-
-```text
-Multi-Page-Event-Website/
-├── index.html
-├── events.html
-├── event-details.html
-├── about.html
-├── contact.html
-├── css/
-│   └── style.css
-├── Dockerfile
-├── docker-compose.yml
-└── README.md
-```
-
-## Useful Docker commands
-
-Check the running container:
+From PowerShell in the project root:
 
 ```powershell
+Copy-Item .env.example .env
+notepad .env
+```
+
+Set `ADMIN_PASSWORD` to a strong unique password and `SESSION_SECRET` to a random secret at least 32 characters long. Never commit `.env`. Only `.env.example` is tracked.
+
+You can generate a random-looking local secret in PowerShell:
+
+```powershell
+-join ((1..48) | ForEach-Object { '{0:x}' -f (Get-Random -Maximum 16) })
+```
+
+## Start the stack
+
+```powershell
+docker compose up --build -d
 docker compose ps
 ```
 
-View Apache/container logs:
+- Public website: http://localhost:8080
+- Admin panel: http://localhost:8080/admin/
+- API health: http://localhost:8080/api/health
+
+Sign in with the username and password from `.env`.
+
+## Browser-based editing
+
+- **Events:** add/edit/delete event records, and set each event to Draft or Published.
+- **Page content:** edit homepage hero, featured event copy, and call-to-action; Preview shows your current draft.
+- **Motion & appearance:** enable or disable GSAP, select motion intensity, and change the accent colour token.
+- Published page copy and published events are served by the API. Content is stored in the `eventsphere-data` Docker volume.
+
+The current page preview is a safe preview card inside the admin panel, not a full drag-and-drop visual builder.
+
+## Developer live edit
+
+The Compose setup mounts only HTML pages, `css/`, `admin/`, `animations.js`, and `site-content.js` into Apache read-only. The host files are still editable.
+
+1. Open the folder in VS Code.
+2. Edit an HTML/CSS/JavaScript file and save.
+3. Refresh http://localhost:8080; normal frontend edits do not require a rebuild.
+
+This explicit mount list prevents files such as `.env`, the backend source, Git metadata, and database files from being served by Apache.
+
+## Commands
 
 ```powershell
 docker compose logs -f website
+docker compose logs -f backend
+docker compose down
 ```
 
-Rebuild only when changing the Dockerfile or container build configuration:
+Rebuild after changing Dockerfiles, dependencies, or Compose configuration:
 
 ```powershell
 docker compose up --build -d
 ```
 
-## Technology overview
+The database survives container recreation in a named volume. To remove the database and all saved content, run `docker compose down -v`.
 
-- **HTML5** provides the multi-page structure and content.
-- **CSS3** provides layout, responsive design, and visual styling.
-- **Apache httpd 2.4** serves the static website.
-- **Docker** packages the web server environment.
-- **Docker Compose** configures the port mapping and live-edit bind mount.
+## Project structure
 
-## License
-
-This is an educational mini project. Add a license file if you intend to distribute or reuse the project under specific terms.
+```text
+.
+├── index.html, events.html, event-details.html, about.html, contact.html
+├── css/style.css
+├── animations.js
+├── site-content.js
+├── admin/                 # Dashboard UI and client logic
+├── backend/app/main.py    # Content API and authentication
+├── backend/requirements.txt
+├── backend/Dockerfile
+├── Dockerfile
+├── docker-compose.yml
+├── .env.example
+├── .gitignore
+└── .dockerignore
+```

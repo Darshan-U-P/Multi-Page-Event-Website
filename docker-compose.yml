@@ -1,10 +1,47 @@
-
 services:
   website:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: event-website
     ports:
-      - "8080:80"
+      - "${WEBSITE_PORT:-8080}:80"
     volumes:
-      - ./:/usr/local/apache2/htdocs/:ro
+      - ./index.html:/usr/local/apache2/htdocs/index.html:ro
+      - ./events.html:/usr/local/apache2/htdocs/events.html:ro
+      - ./event-details.html:/usr/local/apache2/htdocs/event-details.html:ro
+      - ./about.html:/usr/local/apache2/htdocs/about.html:ro
+      - ./contact.html:/usr/local/apache2/htdocs/contact.html:ro
+      - ./css:/usr/local/apache2/htdocs/css:ro
+      - ./admin:/usr/local/apache2/htdocs/admin:ro
+      - ./animations.js:/usr/local/apache2/htdocs/animations.js:ro
+      - ./site-content.js:/usr/local/apache2/htdocs/site-content.js:ro
+    depends_on:
+      backend:
+        condition: service_healthy
     restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: eventsphere-backend
+    environment:
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
+      SESSION_SECRET: ${SESSION_SECRET:?Set SESSION_SECRET in .env}
+      DATA_PATH: /data
+    volumes:
+      - eventsphere-data:/data
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=3)"]
+      interval: 10s
+      timeout: 4s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  eventsphere-data:
