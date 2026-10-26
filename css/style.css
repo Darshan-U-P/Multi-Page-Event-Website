@@ -1558,3 +1558,14 @@ footer:not(.site-footer) {
         margin-bottom: 50px;
     }
 }
+
+/* GSAP motion helpers and configurable accent */
+:root { --eventsphere-accent: #60a5fa; }
+.hero-content h1 span, .section-heading h2 span, .home-cta h2 span { color: var(--eventsphere-accent); }
+html[data-motion-intensity="subtle"] { scroll-behavior: auto; }
+html.disable-site-motion *, html.disable-site-motion *::before, html.disable-site-motion *::after {
+  animation: none !important; transition: none !important; scroll-behavior: auto !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

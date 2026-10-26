@@ -1,0 +1,4 @@
+Options -Indexes
+<FilesMatch "^(admin\.js|admin\.css)$">
+  Require all granted
+</FilesMatch>
