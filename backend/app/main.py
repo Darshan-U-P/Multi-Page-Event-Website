@@ -10,6 +10,10 @@ from pydantic import BaseModel, Field
 
 DATA_PATH=Path(os.getenv("DATA_PATH","/data")); DATA_PATH.mkdir(parents=True,exist_ok=True); DB_PATH=DATA_PATH/"eventsphere.sqlite3"
 ADMIN_USERNAME=os.getenv("ADMIN_USERNAME","admin").strip(); ADMIN_PASSWORD=os.getenv("ADMIN_PASSWORD",""); SESSION_SECRET=os.getenv("SESSION_SECRET","")
+if ADMIN_PASSWORD and (len(ADMIN_PASSWORD)<12 or ADMIN_PASSWORD.lower().startswith(("replace-","change_me"))):
+ raise RuntimeError("Set ADMIN_PASSWORD to a unique password of at least 12 characters; do not use the .env.example placeholder.")
+if SESSION_SECRET and (len(SESSION_SECRET)<32 or SESSION_SECRET.lower().startswith(("replace-","change_me"))):
+ raise RuntimeError("Set SESSION_SECRET to a random secret of at least 32 characters; do not use the .env.example placeholder.")
 COOKIE="eventsphere_session"; SESSION_TTL=8*60*60; ph=PasswordHasher(); password_hash=ph.hash(ADMIN_PASSWORD) if ADMIN_PASSWORD else None
 _sessions:dict[str,tuple[str,float]]={}
 DEFAULT_PAGE={"hero_title":"Find Your Next Great Event.","hero_description":"Discover inspiring conferences, hands-on workshops, and exciting experiences. Find your people, learn something new, and make every moment count.","featured_title":"FutureTech Summit 2026","featured_description":"Explore artificial intelligence, robotics, and emerging technologies shaping tomorrow. A gathering for curious minds and future builders.","cta_title":"Make room for something remarkable."}
