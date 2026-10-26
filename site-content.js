@@ -22,7 +22,7 @@
     const eventCard=e=>{
       const card=document.createElement("article");card.className="event-card";
       const banner=document.createElement("div");banner.className="event-banner "+bannerClass(e);
-      const badge=document.createElement("span");badge.textContent=e.category;banner.append(badge);
+      if(e.image_url){const img=document.createElement("img");img.className="event-cover-image";img.src=e.image_url;img.alt=e.title+" cover";img.loading="lazy";banner.append(img)}const badge=document.createElement("span");badge.textContent=e.category;banner.append(badge);
       const body=document.createElement("div");body.className="event-content";
       const dt=document.createElement("p");dt.className="event-date";dt.textContent=dateShort(e.date);
       const h=document.createElement("h3");h.textContent=e.title;
@@ -53,7 +53,7 @@
         const event=events.find(e=>e.id===requested)||events[0];
         if(event){
           const hero=detail.querySelector(".details-hero");
-          const title=hero?.querySelector("h1,h2");if(title)title.textContent=event.title;
+          const title=hero?.querySelector("h1,h2");if(title)title.textContent=event.title;if(hero&&event.image_url){hero.style.backgroundImage="linear-gradient(90deg,rgba(9,15,29,.88),rgba(9,15,29,.32)),url(\\""+event.image_url+"\\")";hero.style.backgroundSize="cover";hero.style.backgroundPosition="center"}
           const desc=hero?.querySelector("p:not(.section-eyebrow)");if(desc)desc.textContent=event.description;
           const meta=hero?.querySelector(".details-hero-meta");
           if(meta){meta.replaceChildren();for(const label of ["📅 "+new Date(event.date+"T12:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"}),"📍 "+event.location]){const span=document.createElement("span");span.textContent=label;meta.append(span);}}
@@ -64,7 +64,7 @@
         }
       }
     }
-    const settings=settingsRes?.settings;
+    const featuredImage=document.querySelector(".featured-art");if(featuredImage&&Array.isArray(events)&&events[0]?.image_url){featuredImage.style.backgroundImage="linear-gradient(90deg,rgba(9,15,29,.18),rgba(9,15,29,.12)),url(\\""+events[0].image_url+"\\")";featuredImage.style.backgroundSize="cover";featuredImage.style.backgroundPosition="center"}\n    const settings=settingsRes?.settings;
     if(settings){
       document.documentElement.style.setProperty("--eventsphere-accent",settings.accent_color||"#60a5fa");
       if(settings.animations_enabled===false||reduced)document.documentElement.classList.add("disable-site-motion");
