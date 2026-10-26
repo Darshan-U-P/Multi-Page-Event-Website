@@ -129,7 +129,7 @@ def update_pages(body:ContentInput,request:Request):
    if not isinstance(value,str) or not value.strip() or len(value)>1200:raise HTTPException(422,f"Invalid value for {key}.")
    encoded=json.dumps(value.strip());c.execute("INSERT INTO content VALUES(?,?,?,?) ON CONFLICT(key) DO UPDATE SET draft_json=excluded.draft_json,published_json=excluded.published_json,updated_at=excluded.updated_at",(key,encoded,encoded,ts))
   audit(c,"publish","page_content","homepage")
- return {"message":"Homepage content saved and published.","content":get_content(False)}
+ return {"message":"Homepage content saved and published.","content":get_content(True)}
 @app.put("/api/content/settings")
 def update_settings(body:SettingsInput,request:Request):
  require_admin(request)
