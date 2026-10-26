@@ -1,41 +1,34 @@
 # EventSphere — Multi-Page Event Website + Admin CMS
 
-EventSphere is a responsive multi-page event website with GSAP motion and a local admin workspace. The public site uses HTML/CSS/JavaScript and Apache httpd. The admin API uses FastAPI and SQLite, orchestrated with Docker Compose.
+A responsive multi-page event website built with HTML, CSS, JavaScript, GSAP, Apache httpd, FastAPI, SQLite, and Docker Compose.
 
-> **Demo content:** Event listings and dates are examples. This project does not provide ticketing or payments. Admin sessions are intended for a single local Docker instance; harden and review before exposing it to the public internet.
+> **Demo content:** Event listings and schedules are sample content. Booking, ticketing, and payments are not implemented. Admin sessions are intended for one local Docker instance; do not expose the admin publicly without HTTPS, production session storage, rate limiting, and a security review.
 
 ## Features
 
-- Five public pages: Home, Events, Event Details, About, and Contact.
-- GSAP page entrance and ScrollTrigger reveal animations with reduced-motion support.
-- Admin workspace at `/admin/` with password login, event CRUD, draft/published event status, homepage copy editor, appearance preferences, and a local draft preview.
-- FastAPI backend with SQLite content persistence, password hashing, server-side session expiry, HttpOnly session cookie, CSRF token checks, and an audit log.
-- Apache routes `/api/` requests to the private backend service. The backend port is not published to the host.
-- Docker bind mount supports source-code live edits; SQLite database is stored in a named Docker volume.
+- Five public pages with responsive blue/violet styling.
+- GSAP entrance and ScrollTrigger reveals with reduced-motion support.
+- Admin workspace at `/admin/` for login, event management, homepage copy, appearance settings, and a draft preview.
+- FastAPI API with Argon2 password hashing, session expiry, HttpOnly session cookie, CSRF checks, SQLite persistence, and audit logging.
+- Apache proxies `/api/` to the backend; port 8000 is private to the Docker network.
+- Host-file live edits remain available in VS Code. Only web assets are mounted into Apache; local secrets and backend source are not placed in the public document root.
 
-## Requirements
+## Configure the admin login
 
-- Docker Desktop on Windows/macOS, or Docker Engine + Docker Compose on Linux.
-- A code editor such as VS Code.
+From PowerShell in the project root:
 
-## Configure the admin login (required)
-
-Never commit real passwords or secrets.
-
-**PowerShell:**
 ```powershell
 Copy-Item .env.example .env
-# Open .env and set ADMIN_PASSWORD to a strong unique password.
-# Replace SESSION_SECRET with a randomly generated secret (32+ characters).
 notepad .env
 ```
 
-You can generate a secret using PowerShell:
+Set `ADMIN_PASSWORD` to a strong unique password and `SESSION_SECRET` to a random secret at least 32 characters long. Never commit `.env`. Only `.env.example` is tracked.
+
+You can generate a random-looking local secret in PowerShell:
+
 ```powershell
 -join ((1..48) | ForEach-Object { '{0:x}' -f (Get-Random -Maximum 16) })
 ```
-
-The generated value is for local development. Keep `.env` untracked; `.gitignore` excludes it.
 
 ## Start the stack
 
@@ -44,31 +37,32 @@ docker compose up --build -d
 docker compose ps
 ```
 
-Open:
-- Public site: http://localhost:8080
+- Public website: http://localhost:8080
 - Admin panel: http://localhost:8080/admin/
-- Health endpoint: http://localhost:8080/api/health
+- API health: http://localhost:8080/api/health
 
-Log in with the username and password configured in `.env`. Do not use a blank or example password.
+Sign in with the username and password from `.env`.
 
-## Browser-based content editing
+## Browser-based editing
 
-1. Open http://localhost:8080/admin/ and sign in.
-2. Use **Events** to create/update/delete events and choose Draft or Published status.
-3. Use **Page content** to edit the homepage headline, text, featured event copy, and call-to-action; Preview lets you check the draft.
-4. Use **Motion & appearance** to save the GSAP enable switch, motion preference, and accent color.
-5. Save/publish to persist content in SQLite. Published event status controls whether it appears from the public events API.
+- **Events:** add/edit/delete event records, and set each event to Draft or Published.
+- **Page content:** edit homepage hero, featured event copy, and call-to-action; Preview shows your current draft.
+- **Motion & appearance:** enable or disable GSAP, select motion intensity, and change the accent colour token.
+- Published page copy and published events are served by the API. Content is stored in the `eventsphere-data` Docker volume.
 
-The editor preview is an in-admin preview card, not a full DOM visual builder. Homepage content keys are stored through the API; integrating every saved field into all existing public markup is a future extension.
+The current page preview is a safe preview card inside the admin panel, not a full drag-and-drop visual builder.
 
-## Developer live edit (source code)
+## Developer live edit
 
-The Compose bind mount exposes the host project directory to Apache read-only from the container side. Editing on the host is still allowed:
+The Compose setup mounts only HTML pages, `css/`, `admin/`, `animations.js`, and `site-content.js` into Apache read-only. The host files are still editable.
+
 1. Open the folder in VS Code.
-2. Edit an HTML file, `css/style.css`, or `animations.js`.
-3. Save and refresh the browser. You generally do not need to rebuild for these file edits.
+2. Edit an HTML/CSS/JavaScript file and save.
+3. Refresh http://localhost:8080; normal frontend edits do not require a rebuild.
 
-## Useful commands
+This explicit mount list prevents files such as `.env`, the backend source, Git metadata, and database files from being served by Apache.
+
+## Commands
 
 ```powershell
 docker compose logs -f website
@@ -76,12 +70,13 @@ docker compose logs -f backend
 docker compose down
 ```
 
-Rebuild containers after changing Dockerfiles, dependencies, or Compose configuration:
+Rebuild after changing Dockerfiles, dependencies, or Compose configuration:
+
 ```powershell
 docker compose up --build -d
 ```
 
-The SQLite database is stored in the `eventsphere-data` named volume and remains available after container recreation. To intentionally remove the database volume too, use `docker compose down -v` (this permanently deletes its saved content).
+The database survives container recreation in a named volume. To remove the database and all saved content, run `docker compose down -v`.
 
 ## Project structure
 
@@ -90,12 +85,14 @@ The SQLite database is stored in the `eventsphere-data` named volume and remains
 ├── index.html, events.html, event-details.html, about.html, contact.html
 ├── css/style.css
 ├── animations.js
-├── admin/ (dashboard, client code, styles)
-├── backend/app/main.py
+├── site-content.js
+├── admin/                 # Dashboard UI and client logic
+├── backend/app/main.py    # Content API and authentication
 ├── backend/requirements.txt
 ├── backend/Dockerfile
 ├── Dockerfile
 ├── docker-compose.yml
 ├── .env.example
-└── .gitignore
+├── .gitignore
+└── .dockerignore
 ```

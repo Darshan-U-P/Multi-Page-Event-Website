@@ -7,7 +7,15 @@ services:
     ports:
       - "${WEBSITE_PORT:-8080}:80"
     volumes:
-      - ./:/usr/local/apache2/htdocs/:ro
+      - ./index.html:/usr/local/apache2/htdocs/index.html:ro
+      - ./events.html:/usr/local/apache2/htdocs/events.html:ro
+      - ./event-details.html:/usr/local/apache2/htdocs/event-details.html:ro
+      - ./about.html:/usr/local/apache2/htdocs/about.html:ro
+      - ./contact.html:/usr/local/apache2/htdocs/contact.html:ro
+      - ./css:/usr/local/apache2/htdocs/css:ro
+      - ./admin:/usr/local/apache2/htdocs/admin:ro
+      - ./animations.js:/usr/local/apache2/htdocs/animations.js:ro
+      - ./site-content.js:/usr/local/apache2/htdocs/site-content.js:ro
     depends_on:
       backend:
         condition: service_healthy
