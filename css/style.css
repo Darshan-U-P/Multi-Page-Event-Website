@@ -1281,3 +1281,280 @@ footer:not(.site-footer) {
         flex-direction: column;
     }
 }
+
+
+/* =====================================================
+   9. SHARED INNER PAGES + PROJECT INFORMATION PAGES
+   ===================================================== */
+
+.events-page,
+.details-page,
+.info-page {
+    color: #f8fafc;
+}
+
+.page-heading h2,
+.info-hero h1,
+.details-hero h1 {
+    color: #f8fafc;
+    letter-spacing: -1.8px;
+    line-height: 1.12;
+}
+
+.page-heading h2 span,
+.info-hero h1 span {
+    color: #60a5fa;
+}
+
+.page-heading > p:last-child {
+    max-width: 650px;
+}
+
+.event-card,
+.upcoming-card,
+.contact-card,
+.about-grid article {
+    transition: transform .2s ease, border-color .2s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-4px);
+    border-color: #6476a5;
+}
+
+.events-note {
+    max-width: 800px;
+    margin: 42px auto 0;
+    padding: 22px 24px;
+    border-left: 3px solid #60a5fa;
+    background: #111c33;
+}
+
+.events-note p:last-child,
+.sample-notice,
+.contact-disclaimer {
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.details-hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    margin: 22px 0;
+    color: #e2e8f0;
+    font-size: 13px;
+}
+
+.details-hero .button {
+    margin-top: 8px;
+}
+
+.additional-events {
+    padding: 20px 8% 80px;
+}
+
+.additional-events > h2,
+.project-panel h2 {
+    margin-top: 0;
+    font-size: clamp(25px, 3vw, 36px);
+    letter-spacing: -1px;
+}
+
+.additional-event-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.additional-event-grid article {
+    padding: 25px;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    background: #17233b;
+    scroll-margin-top: 24px;
+}
+
+.additional-event-grid article > span,
+.info-number {
+    color: #93c5fd;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+.additional-event-grid h3 {
+    margin: 15px 0 8px;
+}
+
+.additional-event-grid p,
+.about-grid p,
+.project-panel > p:last-child,
+.contact-card > p:not(.section-eyebrow) {
+    color: #aebed3;
+    font-size: 13px;
+    line-height: 1.9;
+}
+
+.info-page {
+    min-height: 75vh;
+    background: #0f172a;
+}
+
+.info-hero {
+    padding: 90px 8%;
+    background:
+        radial-gradient(ellipse at 80% 20%, rgba(91, 33, 182, .25), transparent 45%),
+        #111c33;
+}
+
+.info-hero h1 {
+    max-width: 850px;
+    margin: 18px 0;
+    font-size: clamp(42px, 6vw, 72px);
+}
+
+.info-hero > p:not(.section-eyebrow) {
+    max-width: 720px;
+    color: #aebed3;
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+.info-hero .button {
+    margin-top: 16px;
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    padding: 65px 8%;
+}
+
+.about-grid article {
+    padding: 27px;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    background: #17233b;
+}
+
+.about-grid article:hover,
+.contact-card:hover {
+    transform: translateY(-4px);
+    border-color: #6476a5;
+}
+
+.about-grid h2 {
+    margin: 16px 0 8px;
+    font-size: 21px;
+}
+
+.project-panel {
+    margin: 0 8% 80px;
+    padding: 32px;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    background: #111c33;
+}
+
+.stack-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 22px 0;
+}
+
+.stack-list span {
+    padding: 9px 12px;
+    border: 1px solid #475569;
+    border-radius: 5px;
+    color: #bfdbfe;
+    background: #17233b;
+    font-size: 12px;
+}
+
+.contact-hero {
+    padding-bottom: 65px;
+}
+
+.contact-layout {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    padding: 0 8%;
+    margin-top: -15px;
+}
+
+.contact-card {
+    padding: 30px;
+    border: 1px solid #334155;
+    border-radius: 11px;
+    background: #17233b;
+}
+
+.contact-symbol {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 25px;
+    border: 1px solid #475569;
+    border-radius: 10px;
+    color: #93c5fd;
+    font-size: 24px;
+}
+
+.contact-card h2 {
+    margin: 12px 0;
+    font-size: 23px;
+}
+
+.contact-card .text-link {
+    margin-top: 12px;
+    line-height: 1.6;
+}
+
+.contact-disclaimer {
+    max-width: 850px;
+    margin: 28px auto 75px;
+    padding: 0 24px;
+}
+
+@media (max-width: 760px) {
+    .info-hero {
+        padding: 60px 6%;
+    }
+
+    .about-grid,
+    .contact-layout {
+        grid-template-columns: 1fr;
+        padding-right: 6%;
+        padding-left: 6%;
+    }
+
+    .project-panel {
+        margin-right: 6%;
+        margin-left: 6%;
+        padding: 25px;
+    }
+
+    .additional-events {
+        padding-right: 6%;
+        padding-left: 6%;
+    }
+
+    .additional-event-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-layout {
+        margin-top: 0;
+    }
+
+    .contact-disclaimer {
+        margin-bottom: 50px;
+    }
+}
